@@ -139,6 +139,15 @@ class PrintCounter: public Stopwatch {
     static void initStats();
 
     /**
+     * @brief Enter the Print Statistics
+     * @details Enter the provided statistics and saves them to EEPROM creating
+     * also the magic header.
+     */
+    static void enterStats(const uint16_t new_total_prints, const uint16_t new_finished_prints,
+                           const uint32_t new_print_time, const uint32_t new_longest_print,
+                           const float new_filament_used);
+
+    /**
      * @brief Load the Print Statistics
      * @details Load the statistics from EEPROM
      */

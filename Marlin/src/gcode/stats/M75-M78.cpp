@@ -73,6 +73,32 @@ void GcodeSuite::M77() {
       return;
     }
 
+    if (parser.intval('S') == 999) { // "M78 S999" will set statistics according to P,S,T,L,F values.
+      uint16_t new_total_prints = 0;
+      uint16_t new_finished_prints = 0;
+      uint32_t new_print_time = 0;
+      uint32_t new_longest_print = 0;
+      float new_filament_used = 0;
+
+      if (parser.seenval('P')) {
+        new_total_prints = parser.value_ulong();
+      }
+      if (parser.seenval('S')) {
+        new_finished_prints = parser.value_ulong();
+      }
+      if (parser.seenval('T')) {
+        new_print_time = parser.value_ulong();
+      }
+      if (parser.seenval('L')) {
+        new_longest_print = parser.value_ulong();
+      }
+      if (parser.seenval('F')) {
+        new_filament_used = parser.value_float();
+      }
+      print_job_timer.enterStats(new_total_prints, new_finished_prints, new_print_time, new_longest_print,
+                                 new_filament_used);
+    }
+
     #if HAS_SERVICE_INTERVALS
       if (parser.seenval('R')) {
         print_job_timer.resetServiceInterval(parser.value_int());

@@ -91,6 +91,36 @@ millis_t PrintCounter::deltaDuration() {
   }
 #endif
 
+void PrintCounter::enterStats(const uint16_t new_total_prints, const uint16_t new_finished_prints,
+                              const uint32_t new_print_time, const uint32_t new_longest_print,
+                              const float new_filament_used) {
+  TERN_(DEBUG_PRINTCOUNTER, debug(PSTR("enterStats")));
+
+  loaded = true;
+
+  data = {
+      .totalPrints = new_total_prints
+    , .finishedPrints = new_finished_prints
+    , .printTime = new_print_time
+    , .longestPrint = new_longest_print
+    OPTARG(HAS_EXTRUDERS, .filamentUsed = new_filament_used)
+    #if SERVICE_INTERVAL_1 > 0
+      , .nextService1 = SERVICE_INTERVAL_SEC_1
+    #endif
+    #if SERVICE_INTERVAL_2 > 0
+      , .nextService2 = SERVICE_INTERVAL_SEC_2
+    #endif
+    #if SERVICE_INTERVAL_3 > 0
+      , .nextService3 = SERVICE_INTERVAL_SEC_3
+    #endif
+  };
+
+  saveStats();
+  persistentStore.access_start();
+  persistentStore.write_data(address, (uint8_t)0x16);
+  persistentStore.access_finish();
+}
+
 void PrintCounter::initStats() {
   TERN_(DEBUG_PRINTCOUNTER, debug(PSTR("initStats")));
 
